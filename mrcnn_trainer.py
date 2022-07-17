@@ -62,7 +62,7 @@ WEIGHTS_PATH = os.path.join(ROOT_DIR, "pretrained_weights.h5")
 
 
 def trycatch(func):
-    """ Wraps the decorated function in a try-catch. If function fails print out the exception. """
+    """ Обертывает декорированную функцию в try-catch. Если функция не работает, выведите исключение. """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -140,11 +140,12 @@ def iaa_augmentation():
 
 class MappingChallengeDataset(utils.Dataset):
     def load_dataset(self, dataset_dir, load_train=True, return_coco=True):
-        """ Loads dataset released for the crowdAI Mapping Challenge(https://www.crowdai.org/challenges/mapping-challenge)
-            Params:
-                - dataset_dir : root directory of the dataset (can point to the train/val folder)
-                - load_small : Boolean value which signals if the annotations for all the images need to be loaded into the memory,
-                               or if only a small subset of the same should be loaded into memory
+        """ Загружает набор данных, выпущенный для crowdAI Mapping Challenge(https://www.crowdai.org/challenges/mapping-challenge).
+            Параметры:
+                - dataset_dir : корневой каталог набора данных (может указывать на папку train/val)
+                - load_small : булево значение, которое сигнализирует, нужно ли загружать в память аннотации для всех изображений,
+                               или только небольшое их подмножество должно быть загружено в память.
+
         """
         self.load_train = load_train
         if self.load_train:
@@ -187,16 +188,16 @@ class MappingChallengeDataset(utils.Dataset):
             return self.coco
 
     def load_mask(self, image_id):
-        """ Loads instance mask for a given image
-              This function converts mask from the coco format to a
-              a bitmap [height, width, instance]
-            Params:
-                - image_id : reference id for a given image
-            Returns:
-                masks : A bool array of shape [height, width, instances] with
-                    one mask per instance
-                class_ids : a 1D array of classIds of the corresponding instance masks
-                    (In this version of the challenge it will be of shape [instances] and always be filled with the class-id of the "Building" class.)
+        """ Загружает маску экземпляра для заданного изображения
+              Эта функция преобразует маску из формата coco в формат
+              растровое изображение [высота, ширина, экземпляр].
+            Параметры:
+                - image_id : идентификатор ссылки для данного изображения
+            Возвращает:
+                masks : Массив bool формы [высота, ширина, экземпляры] с
+                    одна маска на экземпляр
+                class_ids : одномерный массив classIds соответствующих масок экземпляров.
+                    (В этой версии задачи он будет иметь форму [instances] и всегда будет заполнен class-id класса "Building").
         """
 
         image_info = self.image_info[image_id]
@@ -232,9 +233,9 @@ class MappingChallengeDataset(utils.Dataset):
             return super(MappingChallengeDataset, self).load_mask(image_id)
 
     def image_reference(self, image_id):
-        """Return a reference for a particular image
-            Ideally you this function is supposed to return a URL
-            but in this case, we will simply return the image_id
+        """Возвращает ссылку на конкретное изображение
+            В идеале эта функция должна возвращать URL-адрес
+            но в данном случае мы просто вернем image_id
         """
         return "crowdai-mapping-challenge::{}".format(image_id)
 
@@ -242,8 +243,8 @@ class MappingChallengeDataset(utils.Dataset):
 
     def annToRLE(self, ann, height, width):
         """
-        Convert annotation which can be polygons, uncompressed RLE to RLE.
-        :return: binary mask (numpy 2D array)
+        Преобразование аннотации, которая может быть полигонами, в RLE без сжатия.
+        :return: двоичная маска (двумерный массив numpy)
         """
         segm = ann['segmentation']
         if isinstance(segm, list):
@@ -261,8 +262,8 @@ class MappingChallengeDataset(utils.Dataset):
 
     def annToMask(self, ann, height, width):
         """
-        Convert annotation which can be polygons, uncompressed RLE, or RLE to binary mask.
-        :return: binary mask (numpy 2D array)
+        Преобразование аннотации, которая может быть полигонами, несжатым RLE или RLE, в двоичную маску.
+        :return: двоичная маска (массив numpy 2D)
         """
         rle = self.annToRLE(ann, height, width)
         m = maskUtils.decode(rle)
